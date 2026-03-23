@@ -92,7 +92,7 @@ import { CustomerDto } from '../../core/models/customer.model';
           <span class="text-right font-bold text-gray-800">Tk. {{ cartStore.subtotal() | number:'1.2-2' }}</span>
 
           <span class="text-gray-500 font-medium">Discount</span>
-          <span class="text-right font-bold text-gray-800">Tk. {{ cartStore.cartDiscount() | number:'1.2-2' }}</span>
+          <span class="text-right font-bold text-gray-800">Tk. {{ cartStore.totalDiscount() | number:'1.2-2' }}</span>
 
           <span class="text-gray-500 font-medium">Vat/Tax</span>
           <span class="text-right font-bold text-gray-800">Tk. {{ cartStore.vatAmount() | number:'1.2-2' }}</span>

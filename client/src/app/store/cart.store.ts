@@ -40,6 +40,12 @@ export class CartStore {
   subtotal = computed(() =>
     this.items().reduce((sum, i) => sum + i.subtotal, 0)
   );
+  lineItemDiscount = computed(() =>
+    Math.round(this.items().reduce((sum, i) => sum + (i.unitPrice * i.quantity - i.subtotal), 0) * 100) / 100
+  );
+  totalDiscount = computed(() =>
+    Math.round((this.lineItemDiscount() + this.cartDiscount()) * 100) / 100
+  );
   vatAmount = computed(() =>
     Math.round(this.subtotal() * this.VAT_RATE * 100) / 100
   );

@@ -23,11 +23,6 @@ export interface FilterOption {
       >
         {{ filter.label }}
       </button>
-      <!-- Extra category slots matching reference screenshot layout -->
-      <button *ngFor="let cat of extraCategories"
-        class="w-full text-left px-4 py-[13px] text-[13px] font-semibold text-[#374151] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">
-        {{ cat }}
-      </button>
     </div>
   `,
   styles: [`:host { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; }`]
@@ -37,20 +32,9 @@ export class CategoryFilterComponent {
   @Output() select = new EventEmitter<'all' | 'in_stock' | 'out_of_stock' | 'discounted'>();
 
   filters: FilterOption[] = [
-    { label: 'All medicine', value: 'all' },
-    { label: 'All medicine', value: 'in_stock' },
-    { label: 'All medicine', value: 'out_of_stock' },
-    { label: 'All medicine', value: 'discounted' },
-  ];
-
-  extraCategories = [
-    'All medicine',
-    'All medicine',
-    'All medicine',
-    'All medicine',
-    'All medicine',
-    'All medicine',
-    'All medicine',
-    'All medicine',
+    { label: 'All', value: 'all' },
+    { label: 'In Stock', value: 'in_stock' },
+    { label: 'Out of Stock', value: 'out_of_stock' },
+    { label: 'Discounted', value: 'discounted' },
   ];
 }

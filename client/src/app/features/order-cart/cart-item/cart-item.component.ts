@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { CartItem } from '../../../store/cart.store';
 import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
 
@@ -40,7 +41,12 @@ import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
       </div>
 
       <!-- Discount % -->
-      <span class="text-center text-gray-500 font-medium">{{ item.discountPct }}</span>
+      <input type="number" [value]="item.discountPct" (change)="onDiscountChange($event)"
+             min="0" max="100" step="1"
+             class="w-full text-center text-[13px] text-gray-700 font-medium bg-transparent border border-transparent
+                    rounded focus:border-[#10B981] focus:outline-none focus:bg-white hover:border-gray-200
+                    transition-colors h-[26px] [appearance:textfield]
+                    [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
 
       <!-- Subtotal -->
       <span class="text-gray-800 text-right font-semibold">{{ item.subtotal }}</span>
@@ -71,6 +77,14 @@ import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
           <button (click)="increment.emit(item)"
                   class="w-7 h-7 rounded-full bg-[#10B981] text-white flex items-center justify-center font-bold text-lg leading-none">+</button>
         </div>
+        <div class="flex items-center gap-1">
+          <input type="number" [value]="item.discountPct" (change)="onDiscountChange($event)"
+                 min="0" max="100" step="1"
+                 class="w-12 text-center text-[12px] text-gray-600 border border-gray-200 rounded h-7
+                        focus:border-[#10B981] focus:outline-none [appearance:textfield]
+                        [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+          <span class="text-[11px] text-gray-400">%</span>
+        </div>
         <span class="text-[12px] text-gray-500">{{ item.unit }}</span>
         <svg (click)="remove.emit(item)" class="w-4 h-4 text-gray-300 hover:text-red-500 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -85,4 +99,10 @@ export class CartItemComponent {
   @Output() decrement = new EventEmitter<CartItem>();
   @Output() updateDiscount = new EventEmitter<{ item: CartItem, discount: number }>();
   @Output() remove = new EventEmitter<CartItem>();
+
+  onDiscountChange(event: Event) {
+    const value = (event.target as HTMLInputElement).valueAsNumber;
+    const clamped = Math.min(100, Math.max(0, Number(value) || 0));
+    this.updateDiscount.emit({ item: this.item, discount: clamped });
+  }
 }

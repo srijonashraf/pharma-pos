@@ -73,7 +73,7 @@ import { UiStore } from '../../../store/ui.store';
               </div>
               <div class="flex justify-between px-3 py-2 border-b border-gray-100">
                 <span class="text-gray-400">Discount</span>
-                <span class="font-semibold text-gray-700">Tk. {{ cartStore.cartDiscount() | number:'1.2-2' }}</span>
+                <span class="font-semibold text-gray-700">Tk. {{ cartStore.totalDiscount() | number:'1.2-2' }}</span>
               </div>
               <div class="flex justify-between px-3 py-2 border-b border-gray-100">
                 <span class="text-gray-400">Adjustment</span>
