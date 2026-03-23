@@ -1,4 +1,4 @@
-# Pharmacy POS API
+# Pharma POS Server
 
 A NestJS-based REST API for a Pharmacy Point of Sale system with PostgreSQL.
 
@@ -55,24 +55,25 @@ Server runs on `http://localhost:3000`
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/medicines` | List medicines (filter, search, paginate) |
-| GET | `/medicines/:id` | Get medicine by ID |
-| POST | `/medicines` | Create medicine |
-| PATCH | `/medicines/:id` | Update medicine |
-| GET | `/customers` | List customers |
-| GET | `/customers/:id` | Get customer by ID |
-| POST | `/customers` | Create customer |
-| GET | `/orders` | List orders |
-| GET | `/orders/:id` | Get order with items & payment |
-| POST | `/orders` | Create order (transactional) |
-| PATCH | `/orders/:id/status` | Update order status |
-| GET | `/health` | Health check |
+| Method | Endpoint             | Description                               |
+| ------ | -------------------- | ----------------------------------------- |
+| GET    | `/medicines`         | List medicines (filter, search, paginate) |
+| GET    | `/medicines/:id`     | Get medicine by ID                        |
+| POST   | `/medicines`         | Create medicine                           |
+| PATCH  | `/medicines/:id`     | Update medicine                           |
+| GET    | `/customers`         | List customers                            |
+| GET    | `/customers/:id`     | Get customer by ID                        |
+| POST   | `/customers`         | Create customer                           |
+| GET    | `/orders`            | List orders                               |
+| GET    | `/orders/:id`        | Get order with items & payment            |
+| POST   | `/orders`            | Create order (transactional)              |
+| PATCH  | `/orders/:id/status` | Update order status                       |
+| GET    | `/health`            | Health check                              |
 
 ## Response Format
 
 **Success:**
+
 ```json
 {
   "success": true,
@@ -81,6 +82,7 @@ Server runs on `http://localhost:3000`
 ```
 
 **Paginated:**
+
 ```json
 {
   "success": true,
@@ -90,6 +92,7 @@ Server runs on `http://localhost:3000`
 ```
 
 **Error:**
+
 ```json
 {
   "success": false,
@@ -102,17 +105,17 @@ Server runs on `http://localhost:3000`
 
 ## Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DB_HOST` | Database host | localhost |
-| `DB_PORT` | Database port | 5432 |
-| `DB_NAME` | Database name | pharma-pos-dev |
-| `DB_USER` | Database user | postgres |
-| `DB_PASS` | Database password | admin123 |
-| `PORT` | Server port | 3000 |
-| `VAT_RATE` | VAT percentage | 0.05 |
+| Variable      | Description         | Default               |
+| ------------- | ------------------- | --------------------- |
+| `DB_HOST`     | Database host       | localhost             |
+| `DB_PORT`     | Database port       | 5432                  |
+| `DB_NAME`     | Database name       | pharma-pos-dev        |
+| `DB_USER`     | Database user       | postgres              |
+| `DB_PASS`     | Database password   | admin123              |
+| `PORT`        | Server port         | 3000                  |
+| `VAT_RATE`    | VAT percentage      | 0.05                  |
 | `CORS_ORIGIN` | Allowed CORS origin | http://localhost:4200 |
-| `NODE_ENV` | Environment | development |
+| `NODE_ENV`    | Environment         | development           |
 
 ## License
 

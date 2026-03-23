@@ -1,59 +1,75 @@
-# Client
+# Pharma POS Client
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+An Angular-based Point of Sale frontend for a Pharmacy system.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Medicine Catalog** – Searchable grid with filtering (in stock, out of stock, discounted) and brand selection
+- **Order Cart** – Add/remove items, adjust quantities, apply line-item discounts, real-time subtotals
+- **Customer Search** – Searchable dropdown to select or change the active customer
+- **Draft Orders** – Save cart snapshots to localStorage, restore or delete from the navbar
+- **Payment Modal** – Cash/Card/MFS payment processing with due/return calculation
+- **Barcode Scanner** – Quick product lookup via barcode input
+- **Responsive Layout** – Mobile-first design with fixed headers/footers and independently scrollable panels
 
-```bash
-ng serve
-```
+## Tech Stack
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Angular 21
+- Tailwind CSS 3
+- RxJS 7
+- TypeScript 5.9
 
-## Code scaffolding
+## Prerequisites
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Node.js 18+
+- npm 11+
+- Backend API running on `http://localhost:3000`
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Setup
 
 ```bash
-ng build
+# Install dependencies
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Run
 
 ```bash
-ng test
+# Development
+npm start
+
+# Production build
+npm run build
 ```
 
-## Running end-to-end tests
+App runs on `http://localhost:4200`
 
-For end-to-end (e2e) testing, run:
+## Project Structure
 
-```bash
-ng e2e
+```
+src/app/
+├── core/                    # Services, models, guards
+│   ├── models/              # DTOs & interfaces
+│   └── services/            # API services (medicine, customer, order)
+├── features/                # Feature components
+│   ├── medicine-catalog/    # Medicine grid, search, category filter
+│   ├── order-cart/          # Cart, cart items, barcode scanner
+│   ├── navbar/              # Top navigation bar
+│   └── modals/              # Payment, add customer, draft list
+├── shared/                  # Reusable components & pipes
+│   ├── components/          # Customer search dropdown, icons
+│   └── pipes/               # Currency formatting
+└── store/                   # State management (cart, UI)
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Configuration
 
-## Additional Resources
+| Variable | Description     | Default              |
+| -------- | --------------- | -------------------- |
+| `apiUrl` | Backend API URL | http://localhost:3000 |
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Configured in `src/environments/environment.ts`.
+
+## License
+
+MIT
