@@ -2,8 +2,6 @@ import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { CartStore, CartItem } from '../../store/cart.store';
 import { CartItemComponent } from './cart-item/cart-item.component';
-import { CurrencyBdtPipe } from '../../shared/pipes/currency-bdt.pipe';
-import { IconComponent } from '../../shared/components/icon/icon.component';
 import { CustomerSearchDropdownComponent } from '../../shared/components/customer-search-dropdown/customer-search-dropdown.component';
 import { MedicineService } from '../../core/services/medicine.service';
 import { UiStore } from '../../store/ui.store';
@@ -14,7 +12,7 @@ import { CustomerDto } from '../../core/models/customer.model';
 @Component({
   selector: 'app-order-cart',
   standalone: true,
-  imports: [CommonModule, CartItemComponent, CurrencyBdtPipe, IconComponent, CustomerSearchDropdownComponent, AddCustomerModalComponent, PaymentModalComponent],
+  imports: [CommonModule, CartItemComponent, CustomerSearchDropdownComponent, AddCustomerModalComponent, PaymentModalComponent],
   template: `
     <!--
       KEY LAYOUT CONTRACT:
