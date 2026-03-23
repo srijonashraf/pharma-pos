@@ -53,9 +53,9 @@ export class CartStore {
         medicineName: medicine.name,
         unit: medicine.unit,
         unitPrice: medicine.price,
-        discountPct: medicine.discountPct,
+        discountPct: Number(medicine.discountPct) || 0,
         quantity: 1,
-        subtotal: this.calcSubtotal(medicine.price, 1, medicine.discountPct),
+        subtotal: this.calcSubtotal(medicine.price, 1, Number(medicine.discountPct) || 0),
       }]);
     }
   }

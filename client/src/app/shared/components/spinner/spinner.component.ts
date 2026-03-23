@@ -4,8 +4,8 @@ import { Component } from '@angular/core';
   selector: 'app-spinner',
   standalone: true,
   template: `
-    <div class="fixed inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+    <div class="flex items-center justify-center w-full h-full py-8">
+      <div class="w-8 h-8 border-2 border-gray-200 border-t-[#10B981] rounded-full animate-spin"></div>
     </div>
   `
 })

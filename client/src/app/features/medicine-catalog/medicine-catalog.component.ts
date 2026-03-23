@@ -13,126 +13,124 @@ import { CartStore } from '../../store/cart.store';
   standalone: true,
   imports: [CommonModule, MedicineSearchComponent, CategoryFilterComponent, MedicineCardComponent],
   template: `
+    <!--
+      KEY LAYOUT CONTRACT:
+      • This component fills the left panel (h-full, flex-col).
+      • Search bar   → flex-shrink-0  (never squishes)
+      • Middle row   → flex-1 min-h-0  (takes all remaining space between search & bottom bar)
+        - Sidebar    → overflow-y-auto  (independent scroll)
+        - Grid area  → flex-col, flex-1 min-h-0
+          - Grid header → flex-shrink-0
+          - Grid scroll → flex-1 min-h-0 overflow-y-auto
+      • Bottom bar   → flex-shrink-0  (always visible, pinned to bottom)
+    -->
     <div class="flex flex-col h-full bg-white">
-      
-      <!-- Top Search Bar -->
-      <div class="p-3 border-b border-gray-200">
+
+      <!-- ── Search Bar (pinned top) ── -->
+      <div class="px-3 pt-3 pb-2 border-b border-gray-100 flex-shrink-0">
         <app-medicine-search (search)="searchQuery.set($event)" />
       </div>
 
-      <!-- Main Layout -->
-      <div class="flex flex-1 overflow-hidden">
-        
-        <!-- Left Sidebar (Desktop Filters) -->
-        <div class="hidden lg:block w-[160px] overflow-y-auto bg-white">
+      <!-- ── Middle: Sidebar + Grid (fills remaining space) ── -->
+      <div class="flex flex-1 min-h-0 overflow-hidden">
+
+        <!-- Left sidebar – independent scroll -->
+        <div class="hidden lg:flex flex-col w-[140px] flex-shrink-0 border-r border-gray-100 overflow-y-auto bg-white">
           <app-category-filter [activeValue]="activeFilter()" (select)="activeFilter.set($event)" />
         </div>
 
-        <!-- Right Content Area -->
-        <div class="flex flex-col flex-1 overflow-hidden">
-          
-          <!-- Grid Header -->
-          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
-            <span class="text-[13px] text-textSecondary">
-              Total Medicine <span class="font-medium text-textPrimary">({{ medicines()?.meta?.total || 0 }})</span>
+        <!-- Right: header + scrollable grid -->
+        <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
+
+          <!-- Grid header (pinned) -->
+          <div class="flex items-center justify-between px-4 py-2 border-b border-gray-100 bg-white flex-shrink-0">
+            <span class="text-[13px] font-semibold text-gray-600">
+              Total Medicine
+              <span class="font-bold text-gray-800">({{ medicines()?.meta?.total || 0 }})</span>
             </span>
-            <select class="text-[13px] text-primary border-none bg-transparent cursor-pointer font-medium focus:outline-none"
-                    (change)="onBrandChange($event)">
-              <option value="">Select brand ▾</option>
-              <option value="Square">Square</option>
-              <option value="Beximco">Beximco</option>
-              <option value="Incepta">Incepta</option>
-            </select>
+            <button class="flex items-center gap-1 text-[13px] font-semibold text-[#10B981] hover:text-emerald-700">
+              Select brand
+              <svg class="w-3.5 h-3.5 mt-px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
           </div>
 
-          <!-- Scrollable Grid -->
-          <div class="flex-1 overflow-y-auto p-3 bg-pageBg">
-            
-            <!-- Loading Skeletons -->
-            <div *ngIf="!medicines()" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-               <div *ngFor="let _ of [1,2,3,4,5,6]" class="border border-gray-200 rounded-lg overflow-hidden animate-pulse bg-white h-[200px]">
-                 <div class="h-[120px] bg-gray-100"></div>
-                 <div class="p-2 space-y-2 mt-2">
-                   <div class="h-3 bg-gray-200 rounded w-3/4"></div>
-                   <div class="h-3 bg-gray-200 rounded w-1/3"></div>
-                 </div>
-               </div>
-            </div>
+          <!-- Scrollable medicine grid -->
+          <div class="flex-1 min-h-0 overflow-y-auto p-3 bg-[#F5F6FA]">
 
-            <!-- Medicine Cards Grid -->
-            <div *ngIf="medicines()" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 pb-[100px]">
-              <app-medicine-card *ngFor="let med of medicines()?.data" [medicine]="med" />
-              
-              <!-- Empty state -->
-              <div *ngIf="medicines()?.data?.length === 0" class="col-span-full py-10 text-center text-textSecondary text-[13px]">
-                No medicines found matching criteria.
+            <!-- Loading skeletons -->
+            <div *ngIf="!medicines()" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div *ngFor="let _ of [1,2,3,4,5,6]"
+                   class="border border-gray-200 rounded-lg overflow-hidden animate-pulse bg-white"
+                   style="height:185px">
+                <div class="bg-gray-100" style="height:115px"></div>
+                <div class="p-2 space-y-2">
+                  <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                  <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                </div>
               </div>
             </div>
-            
+
+            <!-- Medicine Cards -->
+            <div *ngIf="medicines()" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pb-2">
+              <app-medicine-card *ngFor="let med of medicines()?.data" [medicine]="med" />
+              <div *ngIf="medicines()?.data?.length === 0"
+                   class="col-span-full py-12 text-center text-gray-400 text-[13px]">
+                No medicines found.
+              </div>
+            </div>
+
           </div>
-          
         </div>
       </div>
-      
-      <!-- Bottom Action Bar (Fixed at bottom of left panel) -->
-      <div class="flex gap-[12px] p-[12px] border-t border-gray-200 bg-white flex-shrink-0 h-[72px]">
-        <button (click)="resetCart()" class="flex-1 rounded-md font-semibold text-[15px] text-white bg-[#FC686F] hover:brightness-95 transition-all shadow-sm">
+
+      <!-- ── Bottom Action Bar (pinned bottom, always visible) ── -->
+      <div class="flex gap-3 px-3 py-3 border-t border-gray-200 bg-white flex-shrink-0" style="height:68px">
+        <button (click)="resetCart()"
+                class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#FC686F] hover:brightness-95 transition-all shadow-sm">
           Reset
         </button>
-        <button class="flex-1 rounded-md font-semibold text-[15px] text-white bg-[#5D87FF] hover:brightness-95 transition-all shadow-sm">
+        <button class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#5D87FF] hover:brightness-95 transition-all shadow-sm">
           Add. info
         </button>
-        <button class="flex-1 rounded-md font-semibold text-[15px] text-white bg-[#F863A2] hover:brightness-95 transition-all shadow-sm">
+        <button class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#F863A2] hover:brightness-95 transition-all shadow-sm">
           Discount
         </button>
       </div>
-      
+
     </div>
-  `
+  `,
+  styles: [`:host { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }`]
 })
 export class MedicineCatalogComponent {
   medicineService = inject(MedicineService);
-  cartStore = inject(CartStore);
+  cartStore       = inject(CartStore);
 
-  searchQuery = signal('');
+  searchQuery  = signal('');
   activeFilter = signal<'all' | 'in_stock' | 'out_of_stock' | 'discounted'>('all');
   selectedBrand = signal<string>('');
-  currentPage = signal(1);
+  currentPage  = signal(1);
 
-  // Derived state that automatically triggers HTTP when filter signals change
   private filterState = computed(() => ({
-    search: this.searchQuery(),
-    status: this.activeFilter(),
-    brand: this.selectedBrand(),
-    page: this.currentPage(),
-    limit: 20,
+    search:  this.searchQuery(),
+    status:  this.activeFilter(),
+    brand:   this.selectedBrand(),
+    page:    this.currentPage(),
+    limit:   20,
   }));
 
-  // Fetch medicines seamlessly with RxJS
   medicines = toSignal(
     toObservable(this.filterState).pipe(
-      debounceTime(50), 
-      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
-      switchMap(filter => this.medicineService.getMedicines(filter))
+      debounceTime(50),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      switchMap(f => this.medicineService.getMedicines(f))
     )
   );
 
-  onBrandChange(event: Event) {
-    const target = event.target as HTMLSelectElement;
-    this.selectedBrand.set(target.value);
-  }
-
   resetCart() {
-    if (confirm('Are you sure you want to completely clear the cart?')) {
+    if (confirm('Are you sure you want to clear the cart?')) {
       this.cartStore.reset();
-    }
-  }
-
-  draftCart() {
-    if (this.cartStore.items().length > 0) {
-      this.cartStore.draftCount.update(c => c + 1);
-      this.cartStore.reset();
-      // In real scenario, would POST /drafts
     }
   }
 }

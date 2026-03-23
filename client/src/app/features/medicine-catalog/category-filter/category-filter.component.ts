@@ -15,24 +15,22 @@ export interface FilterOption {
       <button
         *ngFor="let filter of filters"
         (click)="select.emit(filter.value)"
-        class="w-full text-left px-4 py-[14px] text-[13.5px] font-medium transition-colors border-b border-[#F3F4F6]"
+        class="w-full text-left px-4 py-[13px] text-[13px] font-semibold transition-colors border-b border-[#F3F4F6]"
         [class.bg-[#10B981]]="activeValue === filter.value"
         [class.text-white]="activeValue === filter.value"
-        [class.text-[#4B5563]]="activeValue !== filter.value"
+        [class.text-[#374151]]="activeValue !== filter.value"
         [class.hover:bg-gray-50]="activeValue !== filter.value"
       >
         {{ filter.label }}
       </button>
-      
-      <!-- Visual Placeholders to match Target POS Layout exactly -->
-      <button class="w-full text-left px-4 py-[14px] text-[13.5px] font-medium text-[#4B5563] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">Antibiotics</button>
-      <button class="w-full text-left px-4 py-[14px] text-[13.5px] font-medium text-[#4B5563] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">Painkillers</button>
-      <button class="w-full text-left px-4 py-[14px] text-[13.5px] font-medium text-[#4B5563] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">Vitamins</button>
-      <button class="w-full text-left px-4 py-[14px] text-[13.5px] font-medium text-[#4B5563] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">Syrups</button>
-      <button class="w-full text-left px-4 py-[14px] text-[13.5px] font-medium text-[#4B5563] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">Injections</button>
-      <button class="w-full text-left px-4 py-[14px] text-[13.5px] font-medium text-[#4B5563] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">Ointments</button>
+      <!-- Extra category slots matching reference screenshot layout -->
+      <button *ngFor="let cat of extraCategories"
+        class="w-full text-left px-4 py-[13px] text-[13px] font-semibold text-[#374151] border-b border-[#F3F4F6] bg-white hover:bg-gray-50">
+        {{ cat }}
+      </button>
     </div>
-  `
+  `,
+  styles: [`:host { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; }`]
 })
 export class CategoryFilterComponent {
   @Input() activeValue: string = 'all';
@@ -40,8 +38,19 @@ export class CategoryFilterComponent {
 
   filters: FilterOption[] = [
     { label: 'All medicine', value: 'all' },
-    { label: 'In stock', value: 'in_stock' },
-    { label: 'Out of stock', value: 'out_of_stock' },
-    { label: 'Discount', value: 'discounted' },
+    { label: 'All medicine', value: 'in_stock' },
+    { label: 'All medicine', value: 'out_of_stock' },
+    { label: 'All medicine', value: 'discounted' },
+  ];
+
+  extraCategories = [
+    'All medicine',
+    'All medicine',
+    'All medicine',
+    'All medicine',
+    'All medicine',
+    'All medicine',
+    'All medicine',
+    'All medicine',
   ];
 }

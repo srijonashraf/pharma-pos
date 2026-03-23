@@ -6,9 +6,9 @@
   body {
     background-color: theme('colors.pageBg');
     color: theme('colors.textPrimary');
+    font-family: 'Nunito', system-ui, -apple-system, sans-serif;
   }
 
-  /* Custom utility classes mimicking standard text vars from the design */
   :root {
     --text-xs: 11px;
     --text-sm: 12px;
@@ -21,12 +21,6 @@
 }
 
 @layer utilities {
-  /* Scrollbar hider for panels if needed */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 }

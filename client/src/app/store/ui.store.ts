@@ -1,28 +1,23 @@
 import { Injectable, signal } from '@angular/core';
 
-export interface ToastMessage {
-  id: number;
+interface Toast {
   message: string;
-  type: 'success' | 'error';
+  type: 'success' | 'error' | 'info';
 }
 
 @Injectable({ providedIn: 'root' })
 export class UiStore {
-  isLoading = signal<boolean>(false);
-  toasts = signal<ToastMessage[]>([]);
-  private toastId = 0;
+  toast = signal<Toast | null>(null);
+  loading = signal(false);
+  private _timer?: any;
 
-  setLoading(state: boolean) {
-    this.isLoading.set(state);
+  showToast(message: string, type: Toast['type'] = 'info') {
+    if (this._timer) clearTimeout(this._timer);
+    this.toast.set({ message, type });
+    this._timer = setTimeout(() => this.toast.set(null), 3000);
   }
 
-  showToast(message: string, type: 'success' | 'error' = 'success') {
-    const id = ++this.toastId;
-    this.toasts.update(t => [...t, { id, message, type }]);
-    
-    // Auto dismiss after 3s as per spec
-    setTimeout(() => {
-      this.toasts.update(t => t.filter(toast => toast.id !== id));
-    }, 3000);
+  setLoading(value: boolean) {
+    this.loading.set(value);
   }
 }

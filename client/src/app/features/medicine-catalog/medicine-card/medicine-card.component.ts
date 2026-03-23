@@ -3,55 +3,61 @@ import { CommonModule } from '@angular/common';
 import { MedicineDto } from '../../../core/models/medicine.model';
 import { CartStore } from '../../../store/cart.store';
 import { BadgeComponent } from '../../../shared/components/badge/badge.component';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
 
 @Component({
   selector: 'app-medicine-card',
   standalone: true,
-  imports: [CommonModule, BadgeComponent, IconComponent, CurrencyBdtPipe],
+  imports: [CommonModule, BadgeComponent, CurrencyBdtPipe],
   template: `
     <div (click)="addToCart()"
-         class="relative w-full border border-gray-200 rounded-lg bg-white overflow-visible cursor-pointer 
-                hover:border-emerald-400 hover:shadow-sm transition-all flex flex-col h-[200px] select-none">
-      
+         class="relative w-full border border-gray-200 rounded-lg bg-white overflow-visible cursor-pointer
+                hover:border-[#10B981] hover:shadow-sm transition-all flex flex-col select-none"
+         style="height: 185px;">
+
       <!-- Top Image Area -->
-      <div class="relative h-[120px] bg-gray-50 flex items-center justify-center rounded-t-lg border-b border-gray-100">
-        
-        <!-- Stock Badge (Top-Left) -->
+      <div class="relative flex-1 bg-[#F9FAFB] flex items-center justify-center rounded-t-lg border-b border-gray-100 overflow-visible"
+           style="min-height: 115px;">
+
+        <!-- Stock / OutOfStock Badge top-left or top-right -->
         <app-badge *ngIf="medicine.stock === 0" [type]="'outOfStock'" />
         <app-badge *ngIf="medicine.stock > 0" [type]="'inStock'" [value]="medicine.stock" />
-        
-        <!-- Medicine Icon (Center) -->
-        <div class="w-10 h-10 text-gray-400">
-          <app-icon name="medicine" />
+
+        <!-- Medicine Image Placeholder -->
+        <div class="flex items-center justify-center w-[52px] h-[52px]">
+          <svg viewBox="0 0 48 48" fill="none" class="w-full h-full opacity-50">
+            <rect x="8" y="14" width="32" height="24" rx="4" stroke="#9CA3AF" stroke-width="2"/>
+            <path d="M16 14V11a4 4 0 018 0v3" stroke="#9CA3AF" stroke-width="2"/>
+            <path d="M20 24h8M24 20v8" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
         </div>
-        
-        <!-- Discount Badge (Bottom-Left) -->
+
+        <!-- Discount Badge bottom-right -->
         <app-badge *ngIf="medicine.discountPct > 0" [type]="'discount'" [value]="medicine.discountPct + '% Off'" />
-        
-        <!-- Cart Qty Indicator (Bottom-Right, overlapping border) -->
+
+        <!-- Cart Qty Indicator -->
         <app-badge *ngIf="cartQty() > 0" [type]="'qty'" [value]="cartQty()" />
       </div>
-      
+
       <!-- Bottom Info Area -->
-      <div class="p-2 flex flex-col justify-center flex-1">
-        <h3 class="text-[13px] font-medium text-gray-800 line-clamp-2 leading-tight mb-1">
+      <div class="px-2 pt-2 pb-2 flex flex-col gap-[2px]">
+        <h3 class="text-[13px] font-semibold text-gray-800 leading-tight line-clamp-2">
           {{ medicine.name }}
         </h3>
-        <span class="text-[13px] text-gray-600 mt-auto">
+        <span class="text-[13px] font-bold text-gray-700">
           {{ medicine.price | currencyBdt }}
         </span>
       </div>
-      
-      <!-- Out of Stock Overlay -->
-      <div *ngIf="medicine.stock === 0" class="absolute inset-0 bg-white/40 rounded-lg cursor-not-allowed"></div>
+
+      <!-- Out of Stock overlay -->
+      <div *ngIf="medicine.stock === 0"
+           class="absolute inset-0 bg-white/50 rounded-lg cursor-not-allowed pointer-events-none"></div>
     </div>
   `
 })
 export class MedicineCardComponent {
   @Input({ required: true }) medicine!: MedicineDto;
-  
+
   cartStore = inject(CartStore);
   cartQty = computed(() => this.cartStore.getQty(this.medicine.id));
 
