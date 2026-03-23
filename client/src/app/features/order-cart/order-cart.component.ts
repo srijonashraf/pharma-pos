@@ -4,6 +4,7 @@ import { CartStore, CartItem } from '../../store/cart.store';
 import { CartItemComponent } from './cart-item/cart-item.component';
 import { CurrencyBdtPipe } from '../../shared/pipes/currency-bdt.pipe';
 import { IconComponent } from '../../shared/components/icon/icon.component';
+import { CustomerSearchDropdownComponent } from '../../shared/components/customer-search-dropdown/customer-search-dropdown.component';
 import { MedicineService } from '../../core/services/medicine.service';
 import { UiStore } from '../../store/ui.store';
 import { AddCustomerModalComponent } from '../modals/add-customer/add-customer-modal.component';
@@ -13,7 +14,7 @@ import { CustomerDto } from '../../core/models/customer.model';
 @Component({
   selector: 'app-order-cart',
   standalone: true,
-  imports: [CommonModule, CartItemComponent, CurrencyBdtPipe, IconComponent, AddCustomerModalComponent, PaymentModalComponent],
+  imports: [CommonModule, CartItemComponent, CurrencyBdtPipe, IconComponent, CustomerSearchDropdownComponent, AddCustomerModalComponent, PaymentModalComponent],
   template: `
     <!--
       KEY LAYOUT CONTRACT:
@@ -28,19 +29,10 @@ import { CustomerDto } from '../../core/models/customer.model';
 
       <!-- ── Customer Row ── -->
       <div class="flex items-center gap-2 px-3 pt-3 pb-2 border-b border-gray-100 flex-shrink-0">
-        <button class="flex items-center gap-2 flex-1 h-[38px] px-3 border border-gray-200
-                       rounded-lg text-[13px] text-gray-700 hover:border-gray-300 bg-white transition-colors">
-          <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-          </svg>
-          <span class="flex-1 text-left truncate font-medium">
-            {{ cartStore.selectedCustomer()?.displayName ?? 'Walking Customer' }}
-          </span>
-          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
-          </svg>
-        </button>
+        <app-customer-search-dropdown
+          class="flex-1"
+          [selectedCustomer]="cartStore.selectedCustomer()"
+          (customerSelected)="onCustomerSelected($event)" />
         <button (click)="isCustomerModalOpen.set(true)"
                 class="flex items-center gap-1 h-[38px] px-3 bg-[#10B981] hover:bg-emerald-600
                        text-white text-[13px] font-bold rounded-lg whitespace-nowrap transition-colors shadow-sm">
@@ -208,8 +200,7 @@ export class OrderCartComponent {
 
   draftCart() {
     if (this.cartStore.items().length > 0) {
-      this.cartStore.draftCount.update(c => c + 1);
-      this.cartStore.reset();
+      this.cartStore.saveDraft();
       this.uiStore.showToast('Order saved to draft', 'success');
       this.isMobileMenuOpen.set(false);
     }
@@ -260,6 +251,10 @@ export class OrderCartComponent {
       input.value = '';
       setTimeout(() => this.barcodeInput.nativeElement.focus(), 10);
     });
+  }
+
+  onCustomerSelected(customer: CustomerDto | null) {
+    this.cartStore.selectedCustomer.set(customer);
   }
 
   onCustomerAdded(customer: CustomerDto) {

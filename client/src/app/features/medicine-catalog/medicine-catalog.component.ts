@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -48,12 +48,31 @@ import { CartStore } from '../../store/cart.store';
               Total Medicine
               <span class="font-bold text-gray-800">({{ medicines()?.meta?.total || 0 }})</span>
             </span>
-            <button class="flex items-center gap-1 text-[13px] font-semibold text-[#10B981] hover:text-emerald-700">
-              Select brand
-              <svg class="w-3.5 h-3.5 mt-px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
+            <div class="relative">
+              <button (click)="toggleBrandDropdown()" class="flex items-center gap-1 text-[13px] font-semibold text-[#10B981] hover:text-emerald-700">
+                {{ selectedBrand() || 'Select brand' }}
+                <svg class="w-3.5 h-3.5 mt-px transition-transform duration-200" [class.rotate-180]="brandDropdownOpen()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+
+              <div *ngIf="brandDropdownOpen()"
+                   class="absolute right-0 top-[30px] w-[200px] bg-white border border-gray-200 rounded-lg shadow-xl z-30 max-h-[240px] overflow-y-auto">
+                <button (click)="selectBrand('')"
+                        class="w-full text-left px-3 py-2 text-[13px] hover:bg-emerald-50 hover:text-[#10B981] transition-colors"
+                        [class.font-bold]="!selectedBrand()"
+                        [class.text-[#10B981]]="!selectedBrand()">
+                  All brands
+                </button>
+                <button *ngFor="let brand of uniqueBrands()"
+                        (click)="selectBrand(brand)"
+                        class="w-full text-left px-3 py-2 text-[13px] text-gray-700 hover:bg-emerald-50 hover:text-[#10B981] transition-colors border-t border-gray-50"
+                        [class.font-bold]="selectedBrand() === brand"
+                        [class.text-[#10B981]]="selectedBrand() === brand">
+                  {{ brand }}
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Scrollable medicine grid -->
@@ -111,6 +130,16 @@ export class MedicineCatalogComponent {
   activeFilter = signal<'all' | 'in_stock' | 'out_of_stock' | 'discounted'>('all');
   selectedBrand = signal<string>('');
   currentPage  = signal(1);
+  brandDropdownOpen = signal(false);
+
+  private elRef = inject(ElementRef);
+
+  uniqueBrands = computed(() => {
+    const data = this.medicines()?.data;
+    if (!data) return [];
+    const brands = data.map(m => m.brand).filter((b): b is string => !!b);
+    return [...new Set(brands)].sort();
+  });
 
   private filterState = computed(() => ({
     search:  this.searchQuery(),
@@ -131,6 +160,22 @@ export class MedicineCatalogComponent {
   resetCart() {
     if (confirm('Are you sure you want to clear the cart?')) {
       this.cartStore.reset();
+    }
+  }
+
+  toggleBrandDropdown() {
+    this.brandDropdownOpen.update(v => !v);
+  }
+
+  selectBrand(brand: string) {
+    this.selectedBrand.set(brand);
+    this.brandDropdownOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    if (!this.elRef.nativeElement.contains(event.target)) {
+      this.brandDropdownOpen.set(false);
     }
   }
 }
