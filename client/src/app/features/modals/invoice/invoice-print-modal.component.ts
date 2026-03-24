@@ -189,7 +189,7 @@ export class InvoicePrintModalComponent {
     return labels[this.data.paymentMethod] || this.data.paymentMethod;
   }
 
-  print(): void {
+  private buildHtml(): string {
     const d = this.data;
     const css = `
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -242,17 +242,17 @@ export class InvoicePrintModalComponent {
       `<tr>
         <td>${this.esc(i.name)}</td>
         <td class="c">${i.quantity} ${this.esc(i.unit)}</td>
-        <td class="r">${i.unitPrice.toFixed(2)}</td>
-        <td class="r b">${i.subtotal.toFixed(2)}</td>
+        <td class="r">${Number(i.unitPrice || 0).toFixed(2)}</td>
+        <td class="r b">${Number(i.subtotal || 0).toFixed(2)}</td>
       </tr>`
     ).join('');
 
     const discountRow = d.discount > 0
-      ? `<div class="total-row"><span class="total-label">Discount</span><span class="total-value disc">- Tk. ${d.discount.toFixed(2)}</span></div>`
+      ? `<div class="total-row"><span class="total-label">Discount</span><span class="total-value disc">- Tk. ${Number(d.discount || 0).toFixed(2)}</span></div>`
       : '';
 
     const adjustmentRow = d.adjustment !== 0
-      ? `<div class="total-row"><span class="total-label">Adjustment</span><span class="total-value">${d.adjustment.toFixed(2)}</span></div>`
+      ? `<div class="total-row"><span class="total-label">Adjustment</span><span class="total-value">${Number(d.adjustment || 0).toFixed(2)}</span></div>`
       : '';
 
     const customerRow = d.customerName
@@ -267,7 +267,7 @@ export class InvoicePrintModalComponent {
       ? `<div class="meta-row meta-full"><span class="meta-label">Reference</span><span class="meta-value">${this.esc(d.paymentReference)}</span></div>`
       : '';
 
-    const html = `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -293,32 +293,57 @@ export class InvoicePrintModalComponent {
     <tbody>${itemRows}</tbody>
   </table>
   <div class="totals">
-    <div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">Tk. ${d.subtotal.toFixed(2)}</span></div>
+    <div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">Tk. ${Number(d.subtotal || 0).toFixed(2)}</span></div>
     ${discountRow}
-    <div class="total-row"><span class="total-label">VAT/Tax</span><span class="total-value">Tk. ${d.vat.toFixed(2)}</span></div>
+    <div class="total-row"><span class="total-label">VAT/Tax</span><span class="total-value">Tk. ${Number(d.vat || 0).toFixed(2)}</span></div>
     ${adjustmentRow}
-    <div class="total-row total-final"><span class="total-label">Total</span><span class="total-value">Tk. ${d.total.toFixed(2)}</span></div>
+    <div class="total-row total-final"><span class="total-label">Total</span><span class="total-value">Tk. ${Number(d.total || 0).toFixed(2)}</span></div>
   </div>
   <div class="pay-grid">
-    <div class="pay-cell pay-left"><span class="pay-label">Paid</span><span class="pay-value">Tk. ${d.amountPaid.toFixed(2)}</span></div>
+    <div class="pay-cell pay-left"><span class="pay-label">Paid</span><span class="pay-value">Tk. ${Number(d.amountPaid || 0).toFixed(2)}</span></div>
     <div class="pay-cell"><span class="pay-label">Status</span><span class="pay-value ${statusClass}">${d.paymentStatus.toUpperCase()}</span></div>
     <div class="pay-cell pay-left"><span class="pay-label">Method</span><span class="pay-value">${this.getMethodLabel()}</span></div>
-    <div class="pay-cell"><span class="pay-label">Due</span><span class="pay-value${d.amountDue > 0 ? ' due-red' : ''}">Tk. ${d.amountDue.toFixed(2)}</span></div>
+    <div class="pay-cell"><span class="pay-label">Due</span><span class="pay-value${d.amountDue > 0 ? ' due-red' : ''}">Tk. ${Number(d.amountDue || 0).toFixed(2)}</span></div>
   </div>
   <div class="footer">Thank you for your purchase</div>
 </div>
 </body>
 </html>`;
+  }
 
-    const printWin = window.open('', '_blank', 'width=400,height=600');
-    if (printWin) {
-      printWin.document.write(html);
-      printWin.document.close();
-      setTimeout(() => {
-        printWin.focus();
-        printWin.print();
-      }, 300);
+  print(): void {
+    const html = this.buildHtml();
+
+    // Create a hidden iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '-10000px';
+    iframe.style.bottom = '-10000px';
+    iframe.style.width = '100px';
+    iframe.style.height = '100px';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (doc) {
+      // Use standard DOM parsing to skip deprecated doc.write() warnings
+      const parser = new DOMParser();
+      const newDoc = parser.parseFromString(html, 'text/html');
+      
+      doc.head.innerHTML = newDoc.head.innerHTML;
+      doc.body.innerHTML = newDoc.body.innerHTML;
+      
+      // Print synchronously to preserve browser click-event trust
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
     }
+
+    // Cleanup iframe after printing dialog is handled
+    setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+    }, 5000);
   }
 
   private esc(s: string): string {
