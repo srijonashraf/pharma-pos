@@ -8,10 +8,12 @@ import { MedicinesModule } from './modules/medicines/medicines.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
+import { AppController } from './app.controller';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 
 @Module({
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
