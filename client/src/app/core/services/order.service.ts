@@ -7,6 +7,7 @@ import {
   CreateOrderResponse,
   OrderListItem,
   OrderDetail,
+  AddPaymentDto,
 } from '../models/order.model';
 import { ApiResponse } from '../models/api-response.model';
 import { environment } from '../../../environments/environment';
@@ -29,6 +30,12 @@ export class OrderService {
 
   getOrderById(id: string): Observable<OrderDetail> {
     return this.http.get<ApiResponse<OrderDetail>>(`${this.baseUrl}/orders/${id}`).pipe(
+      map(res => res.data)
+    );
+  }
+
+  addPayment(orderId: string, dto: AddPaymentDto): Observable<OrderDetail> {
+    return this.http.post<ApiResponse<OrderDetail>>(`${this.baseUrl}/orders/${orderId}/payments`, dto).pipe(
       map(res => res.data)
     );
   }

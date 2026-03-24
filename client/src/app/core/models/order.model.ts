@@ -71,3 +71,8 @@ export interface OrderDetail {
   items: OrderItemDetail[];
   payments: PaymentDetail[];
 }
+
+export interface AddPaymentDto {
+  method: 'cash' | 'bank_card' | 'mfs';
+  amountTaken: number;
+}

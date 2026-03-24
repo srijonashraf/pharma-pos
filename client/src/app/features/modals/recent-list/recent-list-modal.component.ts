@@ -1,12 +1,14 @@
-import { Component, EventEmitter, Output, inject, signal, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../../core/services/order.service';
-import { OrderListItem, OrderDetail, PaymentDetail } from '../../../core/models/order.model';
+import { OrderListItem, OrderDetail, PaymentDetail, AddPaymentDto } from '../../../core/models/order.model';
+import { UiStore } from '../../../store/ui.store';
 
 @Component({
   selector: 'app-recent-list-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" (click)="close.emit()">
       <div class="bg-white rounded-2xl w-full max-w-[520px] shadow-2xl flex flex-col overflow-hidden max-h-[85vh]"
@@ -76,9 +78,9 @@ import { OrderListItem, OrderDetail, PaymentDetail } from '../../../core/models/
               <div class="text-right flex-shrink-0">
                 <div class="text-[14px] font-extrabold text-gray-800">Tk. {{ order.totalAmount | number:'1.2-2' }}</div>
               </div>
+              </div>
             </div>
           </div>
-        </div>
 
         <!-- Order Detail View -->
         <div *ngIf="!loading() && selectedOrder()" class="flex-1 overflow-y-auto">
@@ -136,6 +138,85 @@ import { OrderListItem, OrderDetail, PaymentDetail } from '../../../core/models/
                         [class]="getPaymentStatusClass(selectedOrder()!.payments[0].status)">
                     {{ selectedOrder()!.payments[0].status | uppercase }}
                   </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settle Payment -->
+          <div *ngIf="canSettle()" class="px-5 py-3 border-b border-gray-100">
+            <button *ngIf="!showPaymentForm()"
+                    (click)="togglePaymentForm()"
+                    class="w-full h-10 bg-[#FC686F] hover:bg-red-500 text-white text-[13px] font-extrabold rounded-xl transition-colors">
+              Settle Payment — Tk. {{ currentDue() | number:'1.2-2' }}
+            </button>
+
+            <!-- Payment form -->
+            <div *ngIf="showPaymentForm()" class="border border-gray-200 rounded-xl overflow-hidden">
+              <!-- Due header -->
+              <div class="flex items-center justify-between px-4 py-2.5 bg-red-50 border-b border-red-100">
+                <span class="text-[12px] font-semibold text-red-600">Due Amount</span>
+                <span class="text-[16px] font-extrabold text-[#FC686F]">Tk. {{ currentDue() | number:'1.2-2' }}</span>
+              </div>
+
+              <div class="p-3 space-y-3">
+                <!-- Payment method -->
+                <div>
+                  <p class="text-[11px] font-bold text-gray-500 uppercase mb-1.5">Payment Method</p>
+                  <div class="grid grid-cols-3 gap-2">
+                    <button *ngFor="let m of payMethods" (click)="payMethod.set(m.value)"
+                            class="flex flex-col items-center gap-1 py-2 border-2 rounded-lg transition-all"
+                            [class.border-[#10B981]]="payMethod() === m.value"
+                            [class.bg-emerald-50]="payMethod() === m.value"
+                            [class.border-gray-200]="payMethod() !== m.value"
+                            [class.bg-white]="payMethod() !== m.value">
+                      <span class="text-lg">{{ m.icon }}</span>
+                      <span class="text-[11px] font-semibold text-gray-700">{{ m.label }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Amount input -->
+                <div>
+                  <p class="text-[11px] font-bold text-gray-500 uppercase mb-1.5">Amount</p>
+                  <input type="number" [ngModel]="payAmount()" (ngModelChange)="payAmount.set($event)"
+                         class="w-full h-10 px-3 border-2 border-gray-200 rounded-lg text-[15px] text-right
+                                font-bold text-gray-800 focus:outline-none focus:border-[#10B981]
+                                transition-colors bg-white"
+                         placeholder="0" />
+                </div>
+
+                <!-- Summary -->
+                <div class="grid grid-cols-3 gap-2 text-[11px]">
+                  <div class="bg-gray-50 rounded-lg px-3 py-2 text-center">
+                    <span class="block text-gray-400">Taken</span>
+                    <span class="font-bold text-gray-700">{{ payAmount() || 0 | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg px-3 py-2 text-center">
+                    <span class="block text-gray-400">Return</span>
+                    <span class="font-bold text-gray-700">{{ payAmountReturn() | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="rounded-lg px-3 py-2 text-center"
+                       [class.bg-emerald-50]="payAmountPaid() >= currentDue()"
+                       [class.bg-red-50]="payAmountPaid() < currentDue()">
+                    <span class="block"
+                          [class.text-emerald-500]="payAmountPaid() >= currentDue()"
+                          [class.text-red-400]="payAmountPaid() < currentDue()">{{ payAmountPaid() >= currentDue() ? 'Full' : 'Partial' }}</span>
+                    <span class="font-bold text-gray-700">{{ payAmountPaid() | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2">
+                  <button (click)="closePaymentForm()"
+                          class="h-9 px-4 border border-gray-200 rounded-lg text-[12px] font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                    Cancel
+                  </button>
+                  <button (click)="settlePayment()" [disabled]="paying() || !payAmount()"
+                          class="flex-1 h-9 bg-[#10B981] hover:bg-emerald-600 text-white text-[12px] font-extrabold
+                                 rounded-lg disabled:opacity-50 transition-colors">
+                    {{ paying() ? 'Processing...' : 'Pay Now' }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -201,11 +282,38 @@ export class RecentListModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
 
   private orderService = inject(OrderService);
+  private uiStore = inject(UiStore);
 
   orders = signal<OrderListItem[]>([]);
   selectedOrder = signal<OrderDetail | null>(null);
   loading = signal(true);
   today = new Date().toISOString().slice(0, 10);
+
+  showPaymentForm = signal(false);
+  payMethod = signal<'cash' | 'bank_card' | 'mfs'>('cash');
+  payAmount = signal<number | null>(null);
+  paying = signal(false);
+
+  payMethods: { value: 'cash' | 'bank_card' | 'mfs'; label: string; icon: string }[] = [
+    { value: 'cash',      label: 'Cash',      icon: '💵' },
+    { value: 'bank_card', label: 'Bank/Card',  icon: '💳' },
+    { value: 'mfs',       label: 'MFS',        icon: '📱' },
+  ];
+
+  latestPayment = computed(() => {
+    const detail = this.selectedOrder();
+    return detail && detail.payments.length > 0 ? detail.payments[0] : null;
+  });
+
+  currentDue = computed(() => this.latestPayment()?.amountDue ?? 0);
+
+  canSettle = computed(() => {
+    const status = this.selectedOrder()?.order.status;
+    return status === 'due' || status === 'partial';
+  });
+
+  payAmountReturn = computed(() => Math.max(0, (this.payAmount() || 0) - this.currentDue()));
+  payAmountPaid = computed(() => Math.min(this.payAmount() || 0, this.currentDue()));
 
   ngOnInit() {
     this.fetchOrders();
@@ -227,6 +335,7 @@ export class RecentListModalComponent implements OnInit {
 
   loadOrderDetail(order: OrderListItem) {
     this.loading.set(true);
+    this.closePaymentForm();
     this.orderService.getOrderById(order.id).subscribe({
       next: (detail) => {
         this.selectedOrder.set(detail);
@@ -234,6 +343,47 @@ export class RecentListModalComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
+      }
+    });
+  }
+
+  togglePaymentForm() {
+    this.showPaymentForm.set(true);
+    this.payAmount.set(null);
+    this.payMethod.set('cash');
+  }
+
+  closePaymentForm() {
+    this.showPaymentForm.set(false);
+    this.payAmount.set(null);
+  }
+
+  settlePayment() {
+    const amount = this.payAmount();
+    if (!amount || amount <= 0) return;
+
+    this.paying.set(true);
+    const dto: AddPaymentDto = {
+      method: this.payMethod(),
+      amountTaken: amount,
+    };
+
+    const orderId = this.selectedOrder()!.order.id;
+    this.orderService.addPayment(orderId, dto).subscribe({
+      next: (detail) => {
+        this.selectedOrder.set(detail);
+        this.closePaymentForm();
+        this.paying.set(false);
+        this.uiStore.showToast('Payment settled successfully', 'success');
+
+        // Update the order in the list
+        this.orders.update(list =>
+          list.map(o => o.id === orderId ? { ...o, status: detail.order.status } : o)
+        );
+      },
+      error: () => {
+        this.paying.set(false);
+        this.uiStore.showToast('Failed to settle payment', 'error');
       }
     });
   }
