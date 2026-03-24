@@ -52,37 +52,40 @@ import { CustomerDto } from '../../core/models/customer.model';
         </div>
       </div>
 
-      <!-- ── Table Header (Desktop, pinned) ── -->
-      <div class="hidden lg:grid gap-1 px-3 py-[7px] bg-gray-50 border-b border-gray-200
-                  text-[11px] font-bold text-gray-500 uppercase tracking-wide flex-shrink-0"
-           style="grid-template-columns: 1fr 80px 56px 90px 46px 64px 28px;">
-        <span>Item</span>
-        <span>Unit</span>
-        <span class="text-right">Price</span>
-        <span class="text-center">Qty</span>
-        <span class="text-center">Disc%</span>
-        <span class="text-right">Subtotal</span>
-        <span></span>
-      </div>
+      <!-- ── Desktop & Mobile Table Area ── -->
+      <div class="flex-1 min-h-0 flex flex-col lg:m-3 lg:border lg:border-gray-200 lg:rounded-[10px] bg-[#F5F6FA] lg:bg-white lg:shadow-sm lg:overflow-hidden relative">
 
-      <!-- ── Cart Items — SCROLLABLE ── -->
-      <div class="flex-1 min-h-0 overflow-y-auto bg-[#F5F6FA]">
-        <app-cart-item
-          *ngFor="let item of cartStore.items()"
-          [item]="item"
-          (increment)="increment(item)"
-          (decrement)="decrement(item)"
-          (updateDiscount)="updateDiscount($event)"
-          (updateQuantity)="updateQuantity($event)"
-          (remove)="removeItem(item)" />
+        <!-- ── Table Header (Desktop, pinned) ── -->
+        <div class="hidden lg:grid items-stretch bg-gray-50 border-b border-gray-200 text-[13px] font-medium text-gray-700 flex-shrink-0"
+             style="grid-template-columns: minmax(150px, 1fr) 65px 65px 105px 60px 75px 44px;">
+          <div class="px-3 py-2.5 border-r border-gray-200 flex items-center justify-center">Item</div>
+          <div class="px-1 py-2.5 border-r border-gray-200 flex items-center justify-center">Unit</div>
+          <div class="px-1 py-2.5 border-r border-gray-200 flex items-center justify-center">Price</div>
+          <div class="px-1 py-2.5 border-r border-gray-200 flex items-center justify-center">Qty</div>
+          <div class="px-1 py-2.5 border-r border-gray-200 flex items-center justify-center">Disc%</div>
+          <div class="px-1 py-2.5 border-r border-gray-200 flex items-center justify-center">Subtotal</div>
+          <div class="px-1 py-2.5 flex items-center justify-center"></div>
+        </div>
 
-        <div *ngIf="cartStore.items().length === 0"
-             class="h-full flex flex-col items-center justify-center text-gray-300 py-10 gap-3">
-          <svg class="w-14 h-14 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-          </svg>
-          <p class="text-[13px]">No items added</p>
+        <!-- ── Cart Items — SCROLLABLE ── -->
+        <div class="flex-1 min-h-0 overflow-y-auto w-full">
+          <app-cart-item
+            *ngFor="let item of cartStore.items()"
+            [item]="item"
+            (increment)="increment(item)"
+            (decrement)="decrement(item)"
+            (updateDiscount)="updateDiscount($event)"
+            (updateQuantity)="updateQuantity($event)"
+            (remove)="removeItem(item)" />
+
+          <div *ngIf="cartStore.items().length === 0"
+               class="absolute inset-x-0 bottom-0 top-[40px] flex flex-col items-center justify-center text-gray-300 gap-3 pointer-events-none">
+            <svg class="w-14 h-14 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <p class="text-[13px]">No items added</p>
+          </div>
         </div>
       </div>
 

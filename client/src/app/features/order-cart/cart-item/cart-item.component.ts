@@ -10,59 +10,69 @@ import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
   imports: [CommonModule, CurrencyBdtPipe],
   template: `
     <!-- DESKTOP TABLE ROW -->
-    <div class="hidden lg:grid gap-1 items-center px-3 py-[7px] border-b border-gray-100 text-[13px] bg-white hover:bg-gray-50 transition-colors"
-         style="grid-template-columns: 1fr 80px 56px 90px 46px 64px 28px;">
+    <div class="hidden lg:grid items-stretch border-b border-gray-100 text-[13px] bg-white hover:bg-gray-50 transition-colors last:border-b-0"
+         style="grid-template-columns: minmax(150px, 1fr) 65px 65px 105px 60px 75px 44px;">
 
       <!-- Item name -->
-      <span class="text-gray-800 font-semibold truncate pr-1">{{ item.medicineName }}</span>
+      <div class="px-3 py-2 border-r border-gray-100 flex items-center">
+        <span class="text-gray-800 font-medium truncate">{{ item.medicineName }}</span>
+      </div>
 
       <!-- Unit dropdown -->
-      <div class="flex items-center gap-0.5">
-        <span class="text-[12px] text-gray-600">{{ item.unit }}</span>
-        <svg class="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="px-1 py-2 border-r border-gray-100 flex justify-center items-center gap-1 cursor-pointer">
+        <span class="text-[12px] text-gray-700 font-medium">{{ item.unit }}</span>
+        <svg class="w-3 h-3 text-[#10B981] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
         </svg>
       </div>
 
       <!-- Price -->
-      <span class="text-gray-700 font-medium text-right">{{ item.unitPrice }}</span>
+      <div class="px-1 py-2 border-r border-gray-100 flex justify-center items-center">
+        <span class="text-gray-700 font-medium">{{ item.unitPrice }}</span>
+      </div>
 
       <!-- Qty Controls -->
-      <div class="flex items-center gap-[5px] justify-center">
+      <div class="px-1 py-2 border-r border-gray-100 flex justify-center items-center gap-1.5 px-[2px]">
         <button (click)="decrement.emit(item)"
-                class="w-[22px] h-[22px] rounded-full bg-[#FC686F] hover:bg-red-500 text-white flex items-center justify-center font-bold text-base leading-none flex-shrink-0">
+                class="w-[26px] h-[26px] rounded-full bg-[#EF4444] hover:bg-red-600 text-white flex items-center justify-center font-bold text-lg leading-none flex-shrink-0 transition-colors">
           −
         </button>
         <input type="number" [value]="item.quantity" (change)="onQuantityChange($event)"
                min="1" step="1"
-               class="w-10 text-center text-[13px] text-gray-800 font-semibold bg-transparent border border-transparent
+               class="flex-1 w-full min-w-0 text-center text-[13px] text-gray-800 font-semibold bg-transparent border border-transparent
                       rounded focus:border-[#10B981] focus:outline-none focus:bg-white hover:border-gray-200
                       transition-colors h-[26px] [appearance:textfield]
-                      [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                      [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none p-0" />
         <button (click)="increment.emit(item)"
-                class="w-[22px] h-[22px] rounded-full bg-[#10B981] hover:bg-emerald-600 text-white flex items-center justify-center font-bold text-base leading-none flex-shrink-0">
+                class="w-[26px] h-[26px] rounded-full bg-[#10B981] hover:bg-emerald-600 text-white flex items-center justify-center font-bold text-lg leading-none flex-shrink-0 transition-colors">
           +
         </button>
       </div>
 
       <!-- Discount % -->
-      <input type="number" [value]="item.discountPct" (change)="onDiscountChange($event)"
-             min="0" max="100" step="1"
-             class="w-full text-center text-[13px] text-gray-700 font-medium bg-transparent border border-transparent
-                    rounded focus:border-[#10B981] focus:outline-none focus:bg-white hover:border-gray-200
-                    transition-colors h-[26px] [appearance:textfield]
-                    [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+      <div class="px-1 py-2 border-r border-gray-100 flex justify-center items-center">
+        <input type="number" [value]="item.discountPct" (change)="onDiscountChange($event)"
+               min="0" max="100" step="1"
+               class="w-full text-center text-[13px] text-gray-800 font-bold bg-transparent border border-transparent
+                      rounded focus:border-[#10B981] focus:outline-none focus:bg-white hover:border-gray-200
+                      transition-colors h-[26px] [appearance:textfield]
+                      [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none p-0" />
+      </div>
 
       <!-- Subtotal -->
-      <span class="text-gray-800 text-right font-semibold">{{ item.subtotal }}</span>
+      <div class="px-1 py-2 border-r border-gray-100 flex justify-center items-center">
+        <span class="text-gray-800 font-semibold">{{ item.subtotal }}</span>
+      </div>
 
       <!-- Delete button -->
-      <button (click)="remove.emit(item)"
-              class="flex justify-center items-center text-gray-300 hover:text-red-500 transition-colors">
-        <svg class="w-[15px] h-[15px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-        </svg>
-      </button>
+      <div class="px-1 py-2 flex justify-center items-center">
+        <button (click)="remove.emit(item)"
+                class="w-[28px] h-[28px] flex justify-center items-center rounded border border-red-300 text-[#EF4444] hover:bg-red-50 hover:border-red-400 transition-colors">
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- MOBILE LAYOUT -->
