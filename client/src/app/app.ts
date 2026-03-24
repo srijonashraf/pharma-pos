@@ -6,11 +6,12 @@ import { MedicineCatalogComponent } from './features/medicine-catalog/medicine-c
 import { OrderCartComponent } from './features/order-cart/order-cart.component';
 import { CartStore } from './store/cart.store';
 import { UiStore } from './store/ui.store';
+import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, MobileTabsComponent, MedicineCatalogComponent, OrderCartComponent],
+  imports: [CommonModule, NavbarComponent, MobileTabsComponent, MedicineCatalogComponent, OrderCartComponent, ConfirmDialogComponent],
   template: `
     <!--
       ROOT LAYOUT CONTRACT
@@ -78,6 +79,9 @@ import { UiStore } from './store/ui.store';
         </svg>
         {{ uiStore.toast()?.message }}
       </div>
+
+      <!-- Confirm Dialog -->
+      <app-confirm-dialog *ngIf="uiStore.confirm()" />
     </div>
   `
 })

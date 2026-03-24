@@ -5,10 +5,16 @@ interface Toast {
   type: 'success' | 'error' | 'info';
 }
 
+interface ConfirmState {
+  message: string;
+  action: () => void;
+}
+
 @Injectable({ providedIn: 'root' })
 export class UiStore {
   toast = signal<Toast | null>(null);
   loading = signal(false);
+  confirm = signal<ConfirmState | null>(null);
   private _timer?: any;
 
   showToast(message: string, type: Toast['type'] = 'info') {
@@ -19,5 +25,15 @@ export class UiStore {
 
   setLoading(value: boolean) {
     this.loading.set(value);
+  }
+
+  showConfirm(message: string, action: () => void) {
+    this.confirm.set({ message, action });
+  }
+
+  resolveConfirm(confirmed: boolean) {
+    const state = this.confirm();
+    if (confirmed && state) state.action();
+    this.confirm.set(null);
   }
 }

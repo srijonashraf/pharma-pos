@@ -162,7 +162,14 @@ export class PaymentModalComponent {
   });
 
   saveOrder() {
-    if (this.amountDue() > 0 && !confirm('Order is not fully paid. Process as due order?')) return;
+    if (this.amountDue() > 0) {
+      this.uiStore.showConfirm('Order is not fully paid. Process as due order?', () => this.processSave());
+    } else {
+      this.processSave();
+    }
+  }
+
+  private processSave() {
     this.submitting = true;
 
     const orderDto: CreateOrderDto = {

@@ -7,6 +7,7 @@ import { MedicineSearchComponent } from './medicine-search/medicine-search.compo
 import { CategoryFilterComponent } from './category-filter/category-filter.component';
 import { MedicineCardComponent } from './medicine-card/medicine-card.component';
 import { CartStore } from '../../store/cart.store';
+import { UiStore } from '../../store/ui.store';
 
 @Component({
   selector: 'app-medicine-catalog',
@@ -125,6 +126,7 @@ import { CartStore } from '../../store/cart.store';
 export class MedicineCatalogComponent {
   medicineService = inject(MedicineService);
   cartStore       = inject(CartStore);
+  uiStore         = inject(UiStore);
 
   searchQuery  = signal('');
   activeFilter = signal<'all' | 'in_stock' | 'out_of_stock' | 'discounted'>('all');
@@ -158,9 +160,7 @@ export class MedicineCatalogComponent {
   );
 
   resetCart() {
-    if (confirm('Are you sure you want to clear the cart?')) {
-      this.cartStore.reset();
-    }
+    this.uiStore.showConfirm('Are you sure you want to clear the cart?', () => this.cartStore.reset());
   }
 
   toggleBrandDropdown() {

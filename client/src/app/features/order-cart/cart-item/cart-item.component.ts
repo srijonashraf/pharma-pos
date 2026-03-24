@@ -45,9 +45,7 @@ import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
       </div>
 
       <!-- Qty Controls -->
-      <div
-        class="px-1 py-2 border-r border-gray-100 flex justify-center items-center gap-1.5 px-[2px]"
-      >
+      <div class="py-2 border-r border-gray-100 flex justify-center items-center gap-1.5 px-[2px]">
         <button
           (click)="decrement.emit(item)"
           class="w-[26px] h-[26px] rounded-full bg-[#EF4444] hover:bg-red-600 text-white flex items-center justify-center font-bold text-lg leading-none flex-shrink-0 transition-colors"
