@@ -25,7 +25,15 @@ async function bootstrap() {
 
   const port = configService.get<number>('app.port') || 3000;
   const corsOrigin = configService.get<string>('app.corsOrigin');
-  app.enableCors({ origin: corsOrigin, credentials: true });
+
+  // Parse multiple origins: comma-separated or JSON array
+  const allowedOrigins = corsOrigin
+    ? corsOrigin.startsWith('[')
+      ? JSON.parse(corsOrigin)
+      : corsOrigin.split(',').map((o) => o.trim())
+    : ['http://localhost:4200'];
+
+  app.enableCors({ origin: allowedOrigins, credentials: true });
 
   await app.listen(port);
   logger.log(`Application is running on: http://localhost:${port}`);
