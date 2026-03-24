@@ -2,11 +2,12 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartStore } from '../../store/cart.store';
 import { DraftListModalComponent } from '../modals/draft-list/draft-list-modal.component';
+import { RecentListModalComponent } from '../modals/recent-list/recent-list-modal.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, DraftListModalComponent],
+  imports: [CommonModule, DraftListModalComponent, RecentListModalComponent],
   template: `
     <div
       class="h-[56px] bg-white border-b border-gray-200 px-4 flex items-center justify-between flex-shrink-0 shadow-sm"
@@ -64,7 +65,7 @@ import { DraftListModalComponent } from '../modals/draft-list/draft-list-modal.c
           </svg>
           Return
         </button>
-        <button class="nav-btn">
+        <button (click)="isRecentModalOpen.set(true)" class="nav-btn">
           <svg class="w-[15px] h-[15px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -137,6 +138,11 @@ import { DraftListModalComponent } from '../modals/draft-list/draft-list-modal.c
       *ngIf="isDraftModalOpen()"
       (close)="isDraftModalOpen.set(false)"
       (draftLoaded)="isDraftModalOpen.set(false)" />
+
+    <!-- Recent Orders Modal -->
+    <app-recent-list-modal
+      *ngIf="isRecentModalOpen()"
+      (close)="isRecentModalOpen.set(false)" />
   `,
   styles: [
     `
@@ -163,6 +169,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   cartStore = inject(CartStore);
   currentTime = signal<string>('');
   isDraftModalOpen = signal(false);
+  isRecentModalOpen = signal(false);
   private timer?: any;
 
   ngOnInit() {
