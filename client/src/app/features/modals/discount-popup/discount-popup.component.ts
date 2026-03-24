@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, inject, signal, HostListener } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartStore } from '../../../store/cart.store';
+import { UiStore } from '../../../store/ui.store';
 
 @Component({
   selector: 'app-discount-popup',
@@ -65,11 +66,16 @@ export class DiscountPopupComponent {
   }
 
   cartStore = inject(CartStore);
+  uiStore = inject(UiStore);
   amount = signal<number | null>(null);
 
   applyDiscount() {
     const value = this.amount();
     if (value && value > 0) {
+      if (value > this.cartStore.subtotal()) {
+        this.uiStore.showToast('Discount cannot be greater than the total price', 'error');
+        return;
+      }
       this.cartStore.cartDiscount.set(value);
     }
     this.close.emit();

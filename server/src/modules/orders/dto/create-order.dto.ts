@@ -3,6 +3,7 @@ import {
   IsOptional,
   IsNumber,
   Min,
+  Max,
   ValidateNested,
   IsArray,
   IsUUID,
@@ -26,6 +27,7 @@ export class OrderItemDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100)
   discountPct?: number = 0;
 }
 

@@ -167,6 +167,11 @@ export class OrdersService {
       dto.items,
       medicines,
     );
+
+    if ((dto.discountAmount || 0) > subtotal) {
+      throw new BadRequestException('Cart discount cannot be greater than the total price');
+    }
+
     const vatAmount = this.roundCurrency(subtotal * vatRate);
     const totalAmount = this.roundCurrency(
       subtotal + vatAmount - (dto.discountAmount || 0) + (dto.adjustment || 0),
