@@ -10,6 +10,10 @@ const dataSource = new DataSource({
   database: process.env.DB_NAME || 'pharma-pos-dev',
   entities: [Medicine],
   synchronize: false,
+  ssl:
+    process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 const medicines = [
