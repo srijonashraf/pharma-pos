@@ -8,11 +8,13 @@ import { CategoryFilterComponent } from './category-filter/category-filter.compo
 import { MedicineCardComponent } from './medicine-card/medicine-card.component';
 import { CartStore } from '../../store/cart.store';
 import { UiStore } from '../../store/ui.store';
+import { DiscountPopupComponent } from '../modals/discount-popup/discount-popup.component';
+import { NotePopupComponent } from '../modals/note-popup/note-popup.component';
 
 @Component({
   selector: 'app-medicine-catalog',
   standalone: true,
-  imports: [CommonModule, MedicineSearchComponent, CategoryFilterComponent, MedicineCardComponent],
+  imports: [CommonModule, MedicineSearchComponent, CategoryFilterComponent, MedicineCardComponent, DiscountPopupComponent, NotePopupComponent],
   template: `
     <!--
       KEY LAYOUT CONTRACT:
@@ -111,13 +113,23 @@ import { UiStore } from '../../store/ui.store';
                 class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#FC686F] hover:brightness-95 transition-all shadow-sm">
           Reset
         </button>
-        <button class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#5D87FF] hover:brightness-95 transition-all shadow-sm">
+        <button (click)="isNotePopupOpen.set(true)"
+                class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#5D87FF] hover:brightness-95 transition-all shadow-sm">
           Add. info
         </button>
-        <button class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#F863A2] hover:brightness-95 transition-all shadow-sm">
+        <button (click)="isDiscountPopupOpen.set(true)"
+                class="flex-1 rounded-lg font-bold text-[14px] text-white bg-[#F863A2] hover:brightness-95 transition-all shadow-sm">
           Discount
         </button>
       </div>
+
+      <!-- ── Popups ── -->
+      <app-discount-popup
+        *ngIf="isDiscountPopupOpen()"
+        (close)="isDiscountPopupOpen.set(false)" />
+      <app-note-popup
+        *ngIf="isNotePopupOpen()"
+        (close)="isNotePopupOpen.set(false)" />
 
     </div>
   `,
@@ -133,6 +145,8 @@ export class MedicineCatalogComponent {
   selectedBrand = signal<string>('');
   currentPage  = signal(1);
   brandDropdownOpen = signal(false);
+  isDiscountPopupOpen = signal(false);
+  isNotePopupOpen = signal(false);
 
   private elRef = inject(ElementRef);
 

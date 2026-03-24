@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, inject, signal, computed, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../../core/services/order.service';
@@ -143,6 +143,12 @@ import { UiStore } from '../../../store/ui.store';
             </div>
           </div>
 
+          <!-- Order Note -->
+          <div *ngIf="selectedOrder()!.order.note" class="px-5 py-3 border-b border-gray-100 bg-amber-50">
+            <p class="text-[11px] font-bold text-amber-600 uppercase mb-1">Note</p>
+            <p class="text-[12px] text-gray-700">{{ selectedOrder()!.order.note }}</p>
+          </div>
+
           <!-- Settle Payment -->
           <div *ngIf="canSettle()" class="px-5 py-3 border-b border-gray-100">
             <button *ngIf="!showPaymentForm()"
@@ -280,6 +286,11 @@ import { UiStore } from '../../../store/ui.store';
 })
 export class RecentListModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
+
+  @HostListener('window:keydown.escape')
+  onEscape() {
+    this.close.emit();
+  }
 
   private orderService = inject(OrderService);
   private uiStore = inject(UiStore);

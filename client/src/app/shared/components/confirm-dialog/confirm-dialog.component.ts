@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { UiStore } from '../../../store/ui.store';
 
 @Component({
@@ -28,4 +28,11 @@ import { UiStore } from '../../../store/ui.store';
 })
 export class ConfirmDialogComponent {
   uiStore = inject(UiStore);
+
+  @HostListener('window:keydown.escape')
+  onEscape() {
+    if (this.uiStore.confirm()) {
+      this.uiStore.resolveConfirm(false);
+    }
+  }
 }

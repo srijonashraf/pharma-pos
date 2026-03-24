@@ -7,12 +7,15 @@ import { MedicineService } from '../../core/services/medicine.service';
 import { UiStore } from '../../store/ui.store';
 import { AddCustomerModalComponent } from '../modals/add-customer/add-customer-modal.component';
 import { PaymentModalComponent } from '../modals/payment/payment-modal.component';
+import { CalculatorModalComponent } from '../modals/calculator/calculator-modal.component';
+import { DiscountPopupComponent } from '../modals/discount-popup/discount-popup.component';
+import { NotePopupComponent } from '../modals/note-popup/note-popup.component';
 import { CustomerDto } from '../../core/models/customer.model';
 
 @Component({
   selector: 'app-order-cart',
   standalone: true,
-  imports: [CommonModule, CartItemComponent, CustomerSearchDropdownComponent, AddCustomerModalComponent, PaymentModalComponent],
+  imports: [CommonModule, CartItemComponent, CustomerSearchDropdownComponent, AddCustomerModalComponent, PaymentModalComponent, CalculatorModalComponent, DiscountPopupComponent, NotePopupComponent],
   template: `
     <!--
       KEY LAYOUT CONTRACT:
@@ -119,7 +122,7 @@ import { CustomerDto } from '../../core/models/customer.model';
             {{ cartStore.total() | number:'1.2-2' }}
           </span>
         </div>
-        <button class="w-[50px] rounded-lg bg-[#8E8E93] hover:brightness-95 flex items-center justify-center text-white shadow-sm transition-all">
+        <button (click)="isCalculatorOpen.set(true)" class="w-[50px] rounded-lg bg-[#8E8E93] hover:brightness-95 flex items-center justify-center text-white shadow-sm transition-all">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="4" y="2" width="16" height="20" rx="2" stroke-width="1.8"/>
             <path d="M8 6h8M8 10h2m4 0h2M8 14h2m4 0h2M8 18h2m4 0h2" stroke-width="1.8" stroke-linecap="round"/>
@@ -144,9 +147,19 @@ import { CustomerDto } from '../../core/models/customer.model';
              class="absolute bottom-full left-0 mb-2 px-3 flex flex-col gap-2 w-[180px] z-20">
           <button (click)="draftCart()"
                   class="h-10 rounded-lg shadow-md font-bold text-[13px] text-white bg-[#FBB018] w-full">Draft</button>
-          <button class="h-10 rounded-lg shadow-md font-bold text-[13px] text-white bg-[#8E8E93] w-full">Calculator</button>
-          <button class="h-10 rounded-lg shadow-md font-bold text-[13px] text-white bg-[#F863A2] w-full">Discount</button>
-          <button class="h-10 rounded-lg shadow-md font-bold text-[13px] text-white bg-[#5D87FF] w-full">Add. info (1)</button>
+          <button (click)="isCalculatorOpen.set(true); isMobileMenuOpen.set(false)" class="h-10 rounded-lg shadow-md font-bold text-[13px] text-white bg-[#8E8E93] w-full">Calculator</button>
+          <button (click)="isDiscountPopupOpen.set(true); isMobileMenuOpen.set(false)"
+                  class="h-10 rounded-lg shadow-md font-bold text-[13px] text-white w-full"
+                  [class.bg-[#F863A2]]="!cartStore.cartDiscount()"
+                  [class.bg-[#F59E0B]]="cartStore.cartDiscount()">
+            Discount{{ cartStore.cartDiscount() ? ' · Tk ' + cartStore.cartDiscount() : '' }}
+          </button>
+          <button (click)="isNotePopupOpen.set(true); isMobileMenuOpen.set(false)"
+                  class="h-10 rounded-lg shadow-md font-bold text-[13px] text-white w-full"
+                  [class.bg-[#5D87FF]]="!cartStore.note()"
+                  [class.bg-[#10B981]]="cartStore.note()">
+            Note{{ cartStore.note() ? ' · ✓' : '' }}
+          </button>
         </div>
         <!-- Sticky bar -->
         <div class="flex items-center bg-white border-t border-gray-200 h-[60px]">
@@ -185,6 +198,15 @@ import { CustomerDto } from '../../core/models/customer.model';
         *ngIf="isPaymentModalOpen()"
         (close)="isPaymentModalOpen.set(false)"
         (orderSaved)="onOrderSaved()" />
+      <app-calculator-modal
+        *ngIf="isCalculatorOpen()"
+        (close)="isCalculatorOpen.set(false)" />
+      <app-discount-popup
+        *ngIf="isDiscountPopupOpen()"
+        (close)="isDiscountPopupOpen.set(false)" />
+      <app-note-popup
+        *ngIf="isNotePopupOpen()"
+        (close)="isNotePopupOpen.set(false)" />
     </div>
   `,
   styles: [`:host { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }`]
@@ -199,6 +221,9 @@ export class OrderCartComponent {
   isCustomerModalOpen = signal(false);
   isPaymentModalOpen  = signal(false);
   isMobileMenuOpen    = signal(false);
+  isCalculatorOpen    = signal(false);
+  isDiscountPopupOpen = signal(false);
+  isNotePopupOpen     = signal(false);
 
   draftCart() {
     if (this.cartStore.items().length > 0) {

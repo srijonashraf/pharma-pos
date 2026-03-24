@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Output, inject, computed, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartStore } from '../../../store/cart.store';
@@ -138,6 +138,11 @@ export class PaymentModalComponent {
   @Output() close      = new EventEmitter<void>();
   @Output() orderSaved = new EventEmitter<void>();
 
+  @HostListener('window:keydown.escape')
+  onEscape() {
+    this.close.emit();
+  }
+
   cartStore    = inject(CartStore);
   orderService = inject(OrderService);
   uiStore      = inject(UiStore);
@@ -180,7 +185,8 @@ export class PaymentModalComponent {
       })),
       discountAmount: this.cartStore.cartDiscount(),
       adjustment:     this.cartStore.adjustment(),
-      payment: { method: this.method(), amountTaken: this.amountTaken() || 0 }
+      payment: { method: this.method(), amountTaken: this.amountTaken() || 0 },
+      note:           this.cartStore.note() || undefined,
     };
 
     this.orderService.createOrder(orderDto).subscribe({

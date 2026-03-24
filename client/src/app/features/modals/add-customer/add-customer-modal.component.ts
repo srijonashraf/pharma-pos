@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CustomerService } from '../../../core/services/customer.service';
@@ -139,6 +139,11 @@ export class AddCustomerModalComponent {
   private customerService = inject(CustomerService);
 
   submitting = false;
+
+  @HostListener('window:keydown.escape')
+  onEscape() {
+    this.close.emit();
+  }
 
   form = this.fb.group({
     type:        ['individual', Validators.required],

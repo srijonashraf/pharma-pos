@@ -19,6 +19,7 @@ export interface DraftCart {
   customer: CustomerDto | null;
   discount: number;
   adjustment: number;
+  note: string;
 }
 
 const DRAFTS_KEY = 'pharma_pos_drafts';
@@ -31,6 +32,7 @@ export class CartStore {
   selectedCustomer = signal<CustomerDto | null>(null);
   cartDiscount = signal<number>(0);
   adjustment = signal<number>(0);
+  note = signal<string>('');
   activeTab = signal<'order' | 'cart'>('order');
 
   drafts = signal<DraftCart[]>(this.loadDraftsFromStorage());
@@ -90,6 +92,7 @@ export class CartStore {
       customer: this.selectedCustomer(),
       discount: this.cartDiscount(),
       adjustment: this.adjustment(),
+      note: this.note(),
     };
     this.drafts.update(d => [draft, ...d]);
     this.persistDrafts();
@@ -104,6 +107,7 @@ export class CartStore {
     this.selectedCustomer.set(draft.customer);
     this.cartDiscount.set(draft.discount);
     this.adjustment.set(draft.adjustment);
+    this.note.set(draft.note || '');
 
     this.deleteDraft(draftId);
   }
@@ -118,6 +122,7 @@ export class CartStore {
     this.selectedCustomer.set(null);
     this.cartDiscount.set(0);
     this.adjustment.set(0);
+    this.note.set('');
   }
 
   private calcSubtotal(price: number, qty: number, disc: number): number {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartStore, DraftCart } from '../../../store/cart.store';
 
@@ -50,6 +50,9 @@ import { CartStore, DraftCart } from '../../../store/cart.store';
                   · Tk. {{ getDraftTotal(draft) | number:'1.2-2' }}
                   <span *ngIf="draft.customer" class="ml-1">· {{ draft.customer.displayName || draft.customer.name }}</span>
                 </div>
+                <div *ngIf="draft.note" class="text-[11px] text-amber-600 mt-0.5 truncate">
+                  {{ draft.note }}
+                </div>
               </div>
 
               <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -77,6 +80,11 @@ import { CartStore, DraftCart } from '../../../store/cart.store';
 export class DraftListModalComponent {
   @Output() close = new EventEmitter<void>();
   @Output() draftLoaded = new EventEmitter<void>();
+
+  @HostListener('window:keydown.escape')
+  onEscape() {
+    this.close.emit();
+  }
 
   cartStore = inject(CartStore);
 
