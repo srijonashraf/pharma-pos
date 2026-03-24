@@ -17,6 +17,11 @@ import { ConfigService } from '@nestjs/config';
         synchronize: configService.get<boolean>('database.synchronize'),
         logging: configService.get<boolean>('database.logging'),
         autoLoadEntities: true,
+        ssl:
+          configService.get<string>('database.host')?.includes('aiven') ||
+          process.env.NODE_ENV === 'production'
+            ? { rejectUnauthorized: false }
+            : false,
       }),
     }),
   ],
