@@ -8,8 +8,9 @@ export interface OrderItemDto {
 }
 
 export interface PaymentDto {
-  method: 'cash' | 'bank_card' | 'mfs';
+  method: 'cash' | 'card' | 'mfs';
   amountTaken: number;
+  reference?: string;
 }
 
 export interface CreateOrderDto {
@@ -63,6 +64,7 @@ export interface PaymentDetail {
   amountReturn: number;
   amountDue: number;
   status: string;
+  reference: string | null;
   createdAt: string;
 }
 
@@ -73,6 +75,7 @@ export interface OrderDetail {
 }
 
 export interface AddPaymentDto {
-  method: 'cash' | 'bank_card' | 'mfs';
+  method: 'cash' | 'card' | 'mfs';
   amountTaken: number;
+  reference?: string;
 }

@@ -10,12 +10,15 @@ import { PaymentModalComponent } from '../modals/payment/payment-modal.component
 import { CalculatorModalComponent } from '../modals/calculator/calculator-modal.component';
 import { DiscountPopupComponent } from '../modals/discount-popup/discount-popup.component';
 import { NotePopupComponent } from '../modals/note-popup/note-popup.component';
+import { InvoicePrintModalComponent } from '../modals/invoice/invoice-print-modal.component';
 import { CustomerDto } from '../../core/models/customer.model';
+import { CreateOrderResponse } from '../../core/models/order.model';
+import { InvoiceData } from '../../core/models/invoice.model';
 
 @Component({
   selector: 'app-order-cart',
   standalone: true,
-  imports: [CommonModule, CartItemComponent, CustomerSearchDropdownComponent, AddCustomerModalComponent, PaymentModalComponent, CalculatorModalComponent, DiscountPopupComponent, NotePopupComponent],
+  imports: [CommonModule, CartItemComponent, CustomerSearchDropdownComponent, AddCustomerModalComponent, PaymentModalComponent, CalculatorModalComponent, DiscountPopupComponent, NotePopupComponent, InvoicePrintModalComponent],
   template: `
     <!--
       KEY LAYOUT CONTRACT:
@@ -197,7 +200,12 @@ import { CustomerDto } from '../../core/models/customer.model';
       <app-payment-modal
         *ngIf="isPaymentModalOpen()"
         (close)="isPaymentModalOpen.set(false)"
-        (orderSaved)="onOrderSaved()" />
+        (orderSaved)="onOrderSaved($event)"
+        (printInvoice)="onPrintInvoice($event)" />
+      <app-invoice-print-modal
+        *ngIf="invoiceData()"
+        [data]="invoiceData()!"
+        (close)="invoiceData.set(null)" />
       <app-calculator-modal
         *ngIf="isCalculatorOpen()"
         (close)="isCalculatorOpen.set(false)" />
@@ -224,6 +232,7 @@ export class OrderCartComponent {
   isCalculatorOpen    = signal(false);
   isDiscountPopupOpen = signal(false);
   isNotePopupOpen     = signal(false);
+  invoiceData         = signal<InvoiceData | null>(null);
 
   draftCart() {
     if (this.cartStore.items().length > 0) {
@@ -298,7 +307,13 @@ export class OrderCartComponent {
     this.uiStore.showToast('Customer added successfully', 'success');
   }
 
-  onOrderSaved() { this.isPaymentModalOpen.set(false); }
+  onOrderSaved(res: CreateOrderResponse) {
+    this.isPaymentModalOpen.set(false);
+  }
+
+  onPrintInvoice(data: InvoiceData) {
+    this.invoiceData.set(data);
+  }
 
   private recalc(price: number, qty: number, disc: number): number {
     return Math.round(price * qty * (1 - disc / 100) * 100) / 100;

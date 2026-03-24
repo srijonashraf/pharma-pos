@@ -56,6 +56,9 @@ export class Payment {
   @Column({ type: 'varchar', length: 20 })
   status: string;
 
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  reference: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

@@ -40,6 +40,7 @@ export interface OrderResponse {
     amountReturn: number;
     amountDue: number;
     status: string;
+    reference: string | null;
   };
   status: string;
   createdAt: string;
@@ -96,6 +97,7 @@ export class OrdersService {
         amountReturn,
         amountDue: Math.max(0, order.totalAmount - newTotalPaid),
         status: paymentStatus,
+        reference: dto.reference || null,
       });
       await manager.save(payment);
 
@@ -228,6 +230,7 @@ export class OrdersService {
         amountReturn,
         amountDue,
         status: paymentStatus,
+        reference: dto.payment.reference || null,
       });
       await manager.save(payment);
 
@@ -299,6 +302,7 @@ export class OrdersService {
         amountReturn: Number(payment.amountReturn),
         amountDue: Number(payment.amountDue),
         status: payment.status,
+        reference: payment.reference,
       },
       status: order.status,
       createdAt: order.createdAt.toString(),

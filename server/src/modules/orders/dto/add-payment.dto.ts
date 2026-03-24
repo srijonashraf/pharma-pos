@@ -1,10 +1,14 @@
-import { IsEnum, IsNumber, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class AddPaymentDto {
-  @IsEnum(['cash', 'bank_card', 'mfs'])
-  method: 'cash' | 'bank_card' | 'mfs';
+  @IsEnum(['cash', 'card', 'mfs'])
+  method: 'cash' | 'card' | 'mfs';
 
   @IsNumber()
   @Min(0)
   amountTaken: number;
+
+  @IsOptional()
+  @IsString()
+  reference?: string;
 }

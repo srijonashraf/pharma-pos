@@ -301,14 +301,14 @@ export class RecentListModalComponent implements OnInit {
   today = new Date().toISOString().slice(0, 10);
 
   showPaymentForm = signal(false);
-  payMethod = signal<'cash' | 'bank_card' | 'mfs'>('cash');
+  payMethod = signal<'cash' | 'card' | 'mfs'>('cash');
   payAmount = signal<number | null>(null);
   paying = signal(false);
 
-  payMethods: { value: 'cash' | 'bank_card' | 'mfs'; label: string; icon: string }[] = [
-    { value: 'cash',      label: 'Cash',      icon: '💵' },
-    { value: 'bank_card', label: 'Bank/Card',  icon: '💳' },
-    { value: 'mfs',       label: 'MFS',        icon: '📱' },
+  payMethods: { value: 'cash' | 'card' | 'mfs'; label: string; icon: string }[] = [
+    { value: 'cash', label: 'Cash', icon: '💵' },
+    { value: 'card', label: 'Card', icon: '💳' },
+    { value: 'mfs',  label: 'MFS',  icon: '📱' },
   ];
 
   latestPayment = computed(() => {
@@ -422,7 +422,7 @@ export class RecentListModalComponent implements OnInit {
   formatMethod(method: string): string {
     switch (method) {
       case 'cash': return 'Cash';
-      case 'bank_card': return 'Bank/Card';
+      case 'card': return 'Card';
       case 'mfs': return 'MFS';
       default: return method;
     }
