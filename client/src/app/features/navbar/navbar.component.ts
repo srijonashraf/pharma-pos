@@ -15,15 +15,7 @@ import { DraftListModalComponent } from '../modals/draft-list/draft-list-modal.c
       <div class="flex items-center gap-4">
         <!-- Pharma POS Logo -->
         <div class="flex items-center gap-2">
-          <div class="grid grid-cols-2 gap-[2px] w-[26px] h-[26px]">
-            <div class="bg-[#FF5A5F] rounded-tl-[3px]"></div>
-            <div class="bg-[#00C48C] rounded-tr-[3px]"></div>
-            <div class="bg-[#0081F1] rounded-bl-[3px]"></div>
-            <div class="bg-[#FFBE00] rounded-br-[3px]"></div>
-          </div>
-          <span class="font-bold text-[#0D2441] text-[18px] tracking-tight leading-none"
-            >Pharma <span class="text-[#10B981]">POS</span></span
-          >
+          <img src="/logo.png" alt="Pharma POS Logo" class="h-[28px] w-auto" />
         </div>
 
         <!-- Keyboard Icon Button -->
