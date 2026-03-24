@@ -73,6 +73,7 @@ import { CustomerDto } from '../../core/models/customer.model';
           (increment)="increment(item)"
           (decrement)="decrement(item)"
           (updateDiscount)="updateDiscount($event)"
+          (updateQuantity)="updateQuantity($event)"
           (remove)="removeItem(item)" />
 
         <div *ngIf="cartStore.items().length === 0"
@@ -225,6 +226,14 @@ export class OrderCartComponent {
     this.cartStore.items.update(items =>
       items.map(i => i.medicineId === event.item.medicineId
         ? { ...i, discountPct: event.discount, subtotal: this.recalc(i.unitPrice, i.quantity, event.discount) }
+        : i)
+    );
+  }
+
+  updateQuantity(event: { item: CartItem; quantity: number }) {
+    this.cartStore.items.update(items =>
+      items.map(i => i.medicineId === event.item.medicineId
+        ? { ...i, quantity: event.quantity, subtotal: this.recalc(i.unitPrice, event.quantity, i.discountPct) }
         : i)
     );
   }

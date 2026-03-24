@@ -33,7 +33,12 @@ import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
                 class="w-[22px] h-[22px] rounded-full bg-[#FC686F] hover:bg-red-500 text-white flex items-center justify-center font-bold text-base leading-none flex-shrink-0">
           −
         </button>
-        <span class="w-5 text-center font-semibold text-gray-800">{{ item.quantity }}</span>
+        <input type="number" [value]="item.quantity" (change)="onQuantityChange($event)"
+               min="1" step="1"
+               class="w-10 text-center text-[13px] text-gray-800 font-semibold bg-transparent border border-transparent
+                      rounded focus:border-[#10B981] focus:outline-none focus:bg-white hover:border-gray-200
+                      transition-colors h-[26px] [appearance:textfield]
+                      [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
         <button (click)="increment.emit(item)"
                 class="w-[22px] h-[22px] rounded-full bg-[#10B981] hover:bg-emerald-600 text-white flex items-center justify-center font-bold text-base leading-none flex-shrink-0">
           +
@@ -73,7 +78,11 @@ import { CurrencyBdtPipe } from '../../../shared/pipes/currency-bdt.pipe';
         <div class="flex items-center gap-2 flex-1">
           <button (click)="decrement.emit(item)"
                   class="w-7 h-7 rounded-full bg-[#FC686F] text-white flex items-center justify-center font-bold text-lg leading-none">−</button>
-          <span class="w-6 text-center text-sm font-semibold">{{ item.quantity }}</span>
+          <input type="number" [value]="item.quantity" (change)="onQuantityChange($event)"
+                 min="1" step="1"
+                 class="w-10 text-center text-[12px] text-gray-800 font-semibold border border-gray-200 rounded h-7
+                        focus:border-[#10B981] focus:outline-none [appearance:textfield]
+                        [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
           <button (click)="increment.emit(item)"
                   class="w-7 h-7 rounded-full bg-[#10B981] text-white flex items-center justify-center font-bold text-lg leading-none">+</button>
         </div>
@@ -98,7 +107,14 @@ export class CartItemComponent {
   @Output() increment = new EventEmitter<CartItem>();
   @Output() decrement = new EventEmitter<CartItem>();
   @Output() updateDiscount = new EventEmitter<{ item: CartItem, discount: number }>();
+  @Output() updateQuantity = new EventEmitter<{ item: CartItem, quantity: number }>();
   @Output() remove = new EventEmitter<CartItem>();
+
+  onQuantityChange(event: Event) {
+    const value = (event.target as HTMLInputElement).valueAsNumber;
+    const clamped = Math.max(1, Math.round(Number(value) || 1));
+    this.updateQuantity.emit({ item: this.item, quantity: clamped });
+  }
 
   onDiscountChange(event: Event) {
     const value = (event.target as HTMLInputElement).valueAsNumber;
